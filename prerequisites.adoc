@@ -2,8 +2,7 @@
 
 ### Prerequisites Preparation
 
-IMPORTANT: I supposed you have a non-free credits subscription on Google Clou d to properly create and configure the steps below.
-
+IMPORTANT: To accomplish Red Hat Openshift Container Platform, you must have a non-free credits subscription on Google Cloud to properly create and configure the steps below.
 
 The first thing on Google Cloud Platform is to create a new project. As soon as you created the project, go to your Dashboard and take a note of project name and project id. These values will be used in a future. A sample below demonstrates how to accomplish it.
 
@@ -216,10 +215,10 @@ visibility: public
 ----
 TIP: Don't copy the dot punctuation at the end of nameserver records.
 
+=== Open your external DNS zone and delegate cluster DNS subdomain.
 
-Now, check how your DNS Zone parent domain must be setup:
-
-image::https://raw.githubusercontent.com/pecorawal/images/master/dns-godaddy.png[]
+The parent domain must have DNS Zone records as described on previous output:
+image::https://raw.githubusercontent.com/pecorawal/images/master/dns-godaddy2.png
 
 Check if dns zone records are correctly answering.
 

@@ -5,10 +5,11 @@
 
 The OpenShift installation on Google Cloud is based on accomplished the following:
 
-1. Prepare prerequisites
-2. Prerequisites validation
+1. Google Cloud Platform Preparation
+2. External DNS delegation
 3. Ignition files creation
-4. Deploy on vSphere
+4. Installation Setup
+5. Deploy OCP 4.x
 5. Post deployment configuration
 
 
@@ -32,5 +33,3 @@ Usually, the quota is 500 GB which is not enough to create all resources. Check 
 image::https://raw.githubusercontent.com/pecorawal/images/master/gcloud-editquotas.png[]
 
 Wait for an email confirmation that the quota was increased and then destroy the previous install attempt and start a fresh new installation.
-
-I think this article is useful to everyone. And remember, share to multiply, always!
