@@ -223,7 +223,9 @@ TIP: Don't copy the dot punctuation at the end of nameserver records.
 === Open your external DNS zone and delegate cluster DNS subdomain.
 
 The parent domain must have DNS Zone records as described on previous output:
+
 image::https://raw.githubusercontent.com/pecorawal/images/master/dns-godaddy2.png[]
+
 
 Check if dns zone records are correctly answering.
 
