@@ -9,8 +9,6 @@ The first thing on Google Cloud Platform is to create a new project. As soon as 
 image::https://raw.githubusercontent.com/pecorawal/images/master/gcloud-projectid.png[]
 
 
-
-
 === Download your Gcloud Sdk
 
 Next, you need to download gcloud sdk, go to  https://cloud.google.com/sdk/docs/quickstart-macos?authuser=2 and choose the OS that properly fits you. Follow the installation steps on the site.
@@ -20,7 +18,14 @@ You can find a list of another SDK types which best fit on your machine on: link
 
 === Initialize the sdk
 
-To initialize the sdk, you must fisrt update all components under the gcloud installation directory
+Extract files from tar.gz and run inside sdk directory:
+
+[source]
+----
+./install.sh #Follow the on screen instructions
+----
+
+After finished the installer to initialize the sdk, you must first update all components under the gcloud installation directory
 
 [source]
 ----
@@ -223,24 +228,121 @@ image::https://raw.githubusercontent.com/pecorawal/images/master/dns-godaddy2.pn
 Check if dns zone records are correctly answering.
 
 === Download OCP client and installer and Prepare an install-config.yaml
-Go to https://cloud.redhat.com/openshift/, click on Create Cluster and Choose Google Cloud tile, under webpage GCP:select an installation type,  choose IPI option (Installer-provisioned infrastructure).
 
+#### Download install bin
 Download the Openshift Installer, Secret and Command-line interface to the installation directory under your computer.
+[source]
+----
+OCP4_BASEURL=https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest
+LATEST_VERSION=$(curl -s ${OCP4_BASEURL}/release.txt | grep 'Version: ' | awk '{print $2}')
+OS=mac #put linux if you are running under a Linux OS client 
+curl -s ${OCP4_BASEURL}/openshift-client-${OS}-$LATEST_VERSION.tar.gz | tar -xzf - -C /usr/local/bin oc kubectl
+curl -s ${OCP4_BASEURL}/openshift-install-${OS}}-$LATEST_VERSION.tar.gz | tar -xzf - -C /usr/local/bin openshift-install
+----
 
 Next, you need to create a ssh-key to be used as ssh key pair to trigger the installation and automation on Red Hat CoreOs.
 
 [source, yaml]
 ----
-ssh-keygen -t rsa -b 4096 -N '' -f ./gcloud-key.rsa
+ssh-keygen -t rsa -b 4096 -N '' -f ~/.ssh/gcloud-key
 ----
-Keep the private and pub key in a safe place in case that you  need to do any troubleshooting on Red Hat Openshift Cluster
 
+Keep the private and pub key in a safe place in case that you  need to do any troubleshooting on Red Hat Openshift Cluster
 After setup all gcloud stuff it's now time to prepare a install-config.yaml, below is the sample with according previous steps.
+
+#### Generating andm Store Pull Secret
+
+Generate Pull Secret at https://cloud.redhat.com/openshift/install/gcp/installer-provisioned Store it in ~/ocp4/bkp/ocp4_pull_secret
+
+
+#### Create install file:
+
+[source]
+----
+mkdir ~/ocp4 ~/ocp4/bkp ~/ocp4/install
+cd ~/ocp4
+
+
+export DOMAIN=pec-labs.site # <1>
+export CLUSTERID=ocp4 # <2>
+export PULL_SECRET=$(cat ~/ocp4/bkp/ocp4_pull_secret) # <3>
+export OCP_SSH_KEY=$(cat ~/.ssh/gcloud-key.pub) # <4>
+export GCP_PROJECTID=hybrid-ridge-271915 <5> 
+export MASTER_FLAVOR=n1-standard-4 <6>
+export WORKER_FLAVOR=n1-standard-2 <7>
+export GCP_REGION=us-east-1 <8>
+
+cat <<EOF > ~/ocp4/bkp/install-config.yaml
+apiVersion: v1
+baseDomain: ${DOMAIN}
+compute:
+- hyperthreading: Enabled
+  name: worker
+  platform:
+    gcp:
+      type: ${WORKER_FLAVOR}
+      zones:
+      - us-east1-b
+      - us-east1-c
+      - us-east1-d
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  platform:
+    gcp:
+      type: ${MASTER_FLAVOR}
+      zones:
+      - us-east1-b
+      - us-east1-c
+      - us-east1-d
+  replicas: 3
+metadata:
+  name: ${CLUSTERID}
+networking:
+  clusterNetworks:
+  - cidr: 10.254.0.0/16
+    hostPrefix: 24
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  gcp:
+    ProjectID: ${GCP_PROJECTID}
+    region: ${GCP_REGION}
+pullSecret: '${PULL_SECRET}'
+fips: false
+sshKey: ${OCP_SSH_KEY}
+EOF
+----
+
+<1> The base domain of the cluster. All DNS records must be sub-domains of this base and include the cluster name.
+<2> The cluster name that you specified in your DNS records.
+<3> Pull secret created at cloud.redhat.com
+<4> The public portion of the default SSH key for the core user in Red Hat Enterprise Linux CoreOS (RHCOS). 
+<5> Google Cloud Project ID.
+<6> Google Cloud Compute Flavor to use to master nodes.
+<7> Google Cloud Compute Flavor to use to worker nodes.
+<8> Google Cloud Region to use to Create Node Machines.
+
+[IMPORTANT]
+====
+Before start a cluster installation check all parameters are filled accordingly and the zones available to your region, adjust if needed on ~/ocp4/bkp/install-config.yaml
+====
 
 [source, yaml]
 ----
 apiVersion: v1
-baseDomain: newgoogle.pec-labs.site
+baseDomain: pec-labs.site
+compute:
+- hyperthreading: Enabled
+  name: worker
+  platform:
+    gcp:
+      type: n1-standard-2
+      zones:
+      - us-east1-b
+      - us-east1-c
+      - us-east1-d
 controlPlane:
   hyperthreading: Enabled
   name: master
@@ -252,46 +354,30 @@ controlPlane:
       - us-east1-c
       - us-east1-d
   replicas: 3
-compute:
-- hyperthreading: Enabled
-  name: worker
-  platform:
-    gcp:
-      type: n1-standard-2
-      zones:
-      - us-east1-b
-      - us-east1-c
-  replicas: 2
 metadata:
   name: ocp4
 networking:
-  clusterNetwork:
-  - cidr: 10.128.0.0/14
-    hostPrefix: 23
-  machineCIDR: 10.0.0.0/16
+  clusterNetworks:
+  - cidr: 10.254.0.0/16
+    hostPrefix: 24
   networkType: OpenShiftSDN
   serviceNetwork:
   - 172.30.0.0/16
 platform:
   gcp:
     ProjectID: hybrid-ridge-271915
-    region: us-east1
-pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K3BlY29yYTFoano2d214YW83ZmFkemVtcDhhcjZ1enMVNNR0dPN1dQOEROT0NXNzZGRVQ5MlhGQ0pVNjZVMldBNEhVTDNF","email":"anonymous@redhat.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K3BlY29yYTFoano2d214YW83ZmFkemVtcDhhcjZ1enM1ZDpLSkVCU0w5Tkw4SUtUQ1pLQlZMNjE5RFZWMVNNR0dPN1dQOEROT0NXNzZGRVQ5MlhGQ0pVNjZVMldBNEhVTDNF","email":"anonymous@redhat.com"},"registry.connect.redhat.com":{"auth":"NTXXXXXXXXXNzZw==","email":"anonymous@redhat.com"},"registry.redhat.io":{"auth":"NTI0MZZZZZZZtGRmdfcjlJWENzZw==","email":"anonymous@redhat.com"}}}'
+    region: us-east-1
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"ommitedAuth"},"registry.redhat.io":{"auth":"ommitted Credentials"}}}'
 fips: false
-sshKey: ssh-rsa AAAAB3= anonymous@saymyname
+sshKey: ssh-rsa p4OfTA/07XOw== anonymous@my-machine
 ----
 
+The filled file will be available on ~/ocp4/bkp/install-config.yaml, after checkings, make a copy of this file to ~/ocp4/install using command below:
 
+[source]
+----
+cp ~/ocp4/bkp/install-config.yaml ~/ocp4/install/
+----
 
-
-=== Start OCP 4 install
-
-
-
-
-
-
-
-
-
+Now, you are able to start the installation.
 
