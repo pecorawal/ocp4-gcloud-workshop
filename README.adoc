@@ -1,5 +1,4 @@
-# Workshop Hands-on - Deploy OCP 4.2 on vSphere
-
+# Workshop Hands-on - Deploy OCP 4.x on Google Cloud
 ### Modules:
 
 link:overview.adoc[Deployment Overview]
@@ -7,8 +6,6 @@ link:overview.adoc[Deployment Overview]
 link:prerequisites.adoc[Prerequisites Preparation]
 
 link:ignition.adoc[Generating Install Files]
-
-link:vsphere-import-ova.adoc[Import OVA on vSphere]
 
 link:deploy.adoc[Deploy Cluster on vSphere]
 
