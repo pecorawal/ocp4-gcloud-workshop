@@ -7,29 +7,9 @@ The OpenShift installation on Google Cloud is based on accomplished the followin
 
 1. Google Cloud Platform Preparation
 2. External DNS delegation
-3. Ignition files creation
+3. Creation of install-config.yaml file
 4. Installation Setup
 5. Deploy OCP 4.x
 5. Post deployment configuration
 
 
-=== Troubleshooting Openshift Installer
-
-It is possible during the installation, you get an IPI error as following.
-
-[source]
-----
-ERROR Error: Error waiting for instance to create: Quota 'SSD_TOTAL_GB' exceeded.  Limit: 500.0 in region us-east1.
-----
-
-To solve the problem you must request to increase quota, unfortunately you should request this only on GUI Console, so:
-
-Go to Console --> IAM & Admin --> Quotas
-
-Filter the Quota type --> All Quotas, Service --> All Services, Metric --> Persistent Disk SSD (GB) and Location--> us-east1 (because this is the region that install-config.yaml is trying to create the objects).
-
-Usually, the quota is 500 GB which is not enough to create all resources. Check in the left blank checkbox and choose edit quotas. Ask to increase from 500GB to 1024GB (don't ask much resource because your approval can pass to a filter instead of auto approval) 
-
-image::https://raw.githubusercontent.com/pecorawal/images/master/gcloud-editquotas.png[]
-
-Wait for an email confirmation that the quota was increased and then destroy the previous install attempt and start a fresh new installation.
