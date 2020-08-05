@@ -2,33 +2,17 @@
 
 ### Post deployment configuration
 
-Some steps is needed after cluster is up.
+After cluster is up and running it is important to add further features to best organize and easy maintenance of cluster.
 
-#### Check the certificates:
+In the next steps, known as DAY 2, you will accomplish the following tasks:
 
-----
-[root@infra-services ocp]# oc get csr
-NAME        AGE     REQUESTOR                                                                   CONDITION
-csr-2zjlx   33m     system:serviceaccount:openshift-machine-config-operator:node-bootstrapper   Approved,Issued
-csr-7f8kq   4m42s   system:serviceaccount:openshift-machine-config-operator:node-bootstrapper   Pending
-csr-8cqn7   19m     system:node:worker-0.ocp.rhbr-labs.com                                      Pending
-csr-8ks7p   4m46s   system:node:worker-0.ocp.rhbr-labs.com                                      Pending
-csr-f4j47   23m     system:serviceaccount:openshift-machine-config-operator:node-bootstrapper   Approved,Issued
-csr-rthw9   4m44s   system:node:worker-1.ocp.rhbr-labs.com                                      Pending
-csr-sppgx   38m     system:serviceaccount:openshift-machine-config-operator:node-bootstrapper   Approved,Issued
-csr-zmtj4   19m     system:node:worker-1.ocp.rhbr-labs.com   
-----
+1. link:infra-worker.adoc[Create infra nodes and setup taints and tolerations strategy].
+2. link:ingresscontroller.adoc[Adjust ingresscontroller default to run only on infra nodes]. 
+3. link:monitoring.adoc[Provisioning monitoring stack to run only on infra nodes].
+4. link:registry.adoc[Provisioning Registry to run only on infra nodes and ephemeral mode].
+5. link:authentication.adoc[Configuring httpd authentication and export oauth CRD in order to add new identity providers]
+6. link:logging.adoc[Create a Cluster Logging stack fully automated].
 
-Approve the certificates with "oc adm certificate approve" command.
-
-----
-[root@infra-services ocp]# oc get csr -ojson | jq -r '.items[] | select(.status == {} ) | .metadata.name' | xargs oc adm certificate approve
-certificatesigningrequest.certificates.k8s.io/csr-7f8kq approved
-certificatesigningrequest.certificates.k8s.io/csr-8cqn7 approved
-certificatesigningrequest.certificates.k8s.io/csr-8ks7p approved
-certificatesigningrequest.certificates.k8s.io/csr-rthw9 approved
-certificatesigningrequest.certificates.k8s.io/csr-zmtj4 approved
-----
 
 #### Set registry storage storage to use an ephemeral volume:
 

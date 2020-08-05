@@ -1,0 +1,103 @@
+== Monitoring Stack 
+
+Monitoring stack are automatic provisioned during cluster provisioning, otherwise, the pods were provisioned and distributed across all available worker nodes. To aggregate them into Infra Nodes, you must adjust the config map to openshift-monitoring namespace.
+The statement that will permit any pod to be provisioned on infra nodes are tolerations arguments. Taints and tolerations working together to accomplish proper infrastructure pods at infra nodes.
+As soon as you finish the previous steps on nodes to become infra nodes with taints statements, you only need now to adjust the configmap as showed below.
+
+====  Move the monitoring stack (openshift-monitoring) to the infra nodes using the tolerations arguments inside configmap according to the following example:
+
+
+[source]
+----
+ cat <<EOF > cluster-monitoring-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: cluster-monitoring-config
+ namespace: openshift-monitoring
+data:
+ config.yaml: |+
+   alertmanagerMain:
+     nodeSelector:
+       node-role.kubernetes.io/infra: ""
+     tolerations:
+     - key: infra
+       value: reserved
+       effect: NoSchedule
+     - key: infra
+       value: reserved
+       effect: NoExecute
+   prometheusK8s:
+     nodeSelector:
+       node-role.kubernetes.io/infra: ""
+     tolerations:
+     - key: infra
+       value: reserved
+       effect: NoSchedule
+     - key: infra
+       value: reserved
+       effect: NoExecute
+   prometheusOperator:
+     nodeSelector:
+       node-role.kubernetes.io/infra: ""
+     tolerations:
+     - key: infra
+       value: reserved
+       effect: NoSchedule
+     - key: infra
+       value: reserved
+       effect: NoExecute
+   grafana:
+     nodeSelector:
+       node-role.kubernetes.io/infra: ""
+     tolerations:
+     - key: infra
+       value: reserved
+       effect: NoSchedule
+     - key: infra
+       value: reserved
+       effect: NoExecute
+   k8sPrometheusAdapter:
+     nodeSelector:
+       node-role.kubernetes.io/infra: ""
+     tolerations:
+     - key: infra
+       value: reserved
+       effect: NoSchedule
+     - key: infra
+       value: reserved
+       effect: NoExecute
+   kubeStateMetrics:
+     nodeSelector:
+       node-role.kubernetes.io/infra: ""
+     tolerations:
+     - key: infra
+       value: reserved
+       effect: NoSchedule
+     - key: infra
+       value: reserved
+       effect: NoExecute
+   telemeterClient:
+     nodeSelector:
+       node-role.kubernetes.io/infra: ""
+     tolerations:
+     - key: infra
+       value: reserved
+       effect: NoSchedule
+     - key: infra
+       value: reserved
+       effect: NoExecute
+   openshiftStateMetrics:
+     nodeSelector:
+       node-role.kubernetes.io/infra: ""
+     tolerations:
+     - key: infra
+       value: reserved
+       effect: NoSchedule
+     - key: infra
+       value: reserved
+       effect: NoExecute
+EOF
+ 
+oc create -f cluster-monitoring-configmap.yaml
+----

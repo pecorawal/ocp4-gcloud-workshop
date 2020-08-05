@@ -1,15 +1,12 @@
 
 # Workshop Hands-on - Deploy OCP 4.x on Google Cloud
 
-### Overview
+=== Overview
 
 The OpenShift installation on Google Cloud is based on accomplished the following:
 
 1. Google Cloud Platform Preparation
 2. External DNS delegation
 3. Creation of install-config.yaml file
-4. Installation Setup
-5. Deploy OCP 4.x
+4. Deploy OCP 4.x
 5. Post deployment configuration
-
-

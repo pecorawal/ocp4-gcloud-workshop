@@ -56,9 +56,6 @@ When the bootstrap takes too much time, it is useful the check the bootstrap log
 
 [core@bootstrap-0 ~]$ journalctl -b -f -u bootkube.service
 -- Logs begin at Mon 2019-11-04 19:32:54 UTC. --
-Nov 04 20:15:50 bootstrap-0.ocp41.rhbr-labs.com bootkube.sh[1391]: https://etcd-1.ocp41.rhbr-labs.com:2379 is unhealthy: failed to connect: dial tcp 10.0.0.21:2379: connect: no route to host
-Nov 04 20:15:50 bootstrap-0.ocp41.rhbr-labs.com bootkube.sh[1391]: https://etcd-2.ocp41.rhbr-labs.com:2379 is unhealthy: failed to connect: dial tcp 10.0.0.22:2379: connect: no route to host
-Nov 04 20:15:50 bootstrap-0.ocp41.rhbr-labs.com bootkube.sh[1391]: https://etcd-0.ocp41.rhbr-labs.com:2379 is unhealthy: failed to connect: context deadline exceeded
 Nov 04 20:15:50 bootstrap-0.ocp41.rhbr-labs.com bootkube.sh[1391]: Error: unhealthy cluster
 Nov 04 20:15:50 bootstrap-0.ocp41.rhbr-labs.com bootkube.sh[1391]: etcdctl failed. Retrying in 5 seconds...
 Nov 04 20:25:56 bootstrap-0.ocp41.rhbr-labs.com bootkube.sh[1391]: https://etcd-0.ocp41.rhbr-labs.com:2379 is unhealthy: failed to connect: context deadline exceeded
