@@ -4,9 +4,9 @@
 === Start OCP 4 install
 
 As soon as, all of your prerequisites done and you have the install-config.yaml it's now time to finnaly install your cluster.
-
+----
 ./openshift-install create cluster --dir=install --log-level=debug
-
+----
 Wait until Openshift Cluster Api up until get the credentials to login to the cluster.
 
 #### Running oc commands
