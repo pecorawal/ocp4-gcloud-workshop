@@ -1,0 +1,241 @@
+= Workshop Hands-on - Deploy OCP 4.x on Google Cloud
+
+
+== Cluster Logging Deployment
+The Red Hat OpenShift includes a Logging Agregation tool based on Elasticsearch, FluentD and Kibana. Its installation is optional, but recommended in case your organization does not have any other logging solution already in place.
+
+The deployment is very straightforward. Run the commands below in a terminal with oc (run `oc login` first using a cluster-admin user).
+
+For more information check the link:https://docs.openshift.com/container-platform/4.3/logging/cluster-logging-deploying.html[official documentation].
+
+=== Create the openshift-operators namespace
+----
+cat <<EOF > eo-namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-operators-redhat 
+  annotations:
+    openshift.io/node-selector: ""
+  labels:
+    openshift.io/cluster-monitoring: "true" 
+EOF
+
+oc create -f eo-namespace.yaml
+----
+
+=== Create the OperatorGroup
+----
+cat <<EOF > eo-og.yaml
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-operators-redhat
+  namespace: openshift-operators-redhat 
+spec: {}
+EOF
+
+oc create -f eo-og.yaml
+----
+
+=== Create the ES subscription
+----
+cat <<EOF > eo-sub.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: "elasticsearch-operator"
+  namespace: "openshift-operators-redhat" 
+spec:
+  channel: "4.5" 
+  installPlanApproval: "Automatic"
+  source: "redhat-operators" 
+  sourceNamespace: "openshift-marketplace"
+  name: "elasticsearch-operator"
+EOF
+
+oc create -f eo-sub.yaml
+----
+
+=== Configure the project RBAC
+
+----
+oc project openshift-operators-redhat
+
+cat <<EOF > eo-rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: prometheus-k8s
+  namespace: openshift-operators-redhat
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: prometheus-k8s
+  namespace: openshift-operators-redhat
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: prometheus-k8s
+subjects:
+- kind: ServiceAccount
+  name: prometheus-k8s
+  namespace: openshift-operators-redhat
+EOF
+
+
+oc create -f eo-rbac.yaml
+----
+=== Deploy Cluster Logging Operator
+
+----
+cat <<EOF > clo-namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-logging 
+  annotations:
+    openshift.io/node-selector: "" 
+  labels:
+    openshift.io/cluster-monitoring: "true" 
+EOF
+
+oc create -f clo-namespace.yaml
+----
+
+==== Custom Resource Definition - Cluster Logging
+
+The CRD defines the way like operators will run, to cluster logging we have some options like deploy with/without redundancy.
+
+Cluster Logging in HA (3 ES instances):
+
+----
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogging
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  collection:
+    logs:
+      fluentd: {}
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+      type: fluentd
+  curation:
+    curator:
+      schedule: 30 3 * * *
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: curator
+  logStore:
+    elasticsearch:
+      nodeCount: 3
+      redundancyPolicy: SingleRedundancy
+      storage:
+        size: 200G
+        storageClassName: gp2
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: elasticsearch
+  managementState: Managed
+  visualization:
+    kibana:
+      replicas: 1
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: kibana
+----
+
+
+==== Cluster Logging single instance:
+----
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogging
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  collection:
+    logs:
+      fluentd: {}
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+      type: fluentd
+  curation:
+    curator:
+      schedule: 30 3 * * *
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: curator
+  logStore:
+    elasticsearch:
+      nodeCount: 1
+      redundancyPolicy: ZeroRedundancy
+      storage:
+        size: 200G
+        storageClassName: gp2
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: elasticsearch
+  managementState: Managed
+  visualization:
+    kibana:
+      replicas: 1
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: kibana
+----
+
+NOTE: After apply cluster logging CRD, Check the pods start to create.

@@ -1,0 +1,42 @@
+
+
+
+=== Config authentication with httpd
+
+[source]
+----
+sudo yum install httpd-tools #executed from bastion
+htpasswd -c -B -b users.htpasswd admin 'passwd'
+oc create secret generic htpass-secret --from-file=htpasswd=users.htpasswd -n openshift-config
+
+cat <<EOF > htpasswd-conf.yml
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: my_htpasswd_provider
+    mappingMethod: claim
+    type: HTPasswd
+    htpasswd:
+      fileData:
+        name: htpass-secret
+EOF
+
+oc apply -f htpasswd-conf.yml
+oc adm policy add-cluster-role-to-user cluster-admin admin
+----
+
+IMPORTANT: Test the authentication against Web Console to guarantee that user and permissions were properly setup.
+
+
+=== Remove kubeadmin 
+
+
+For security reasons kubeadmin has basic authentication and it can be found at install/auth directory in clear text, after create new identity provider as Httpd or LDAP it is reccommend to remove kubeadmin user.
+
+[source]
+----
+oc delete secrets kubeadmin -n kube-system
+----

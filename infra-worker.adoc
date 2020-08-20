@@ -123,111 +123,14 @@ oc create -f machineset-ocp4-8bjtp-i-b.yaml
 oc adm taint nodes -l role=infra infra=reserved:NoSchedule infra=reserved:NoExecute
 ----
 
-==== 7. Move the monitoring stack (openshift-monitoring) to the infra nodes using the tolerations arguments inside configmap according to the following example:
-
-[source]
-----
- cat <<EOF > cluster-monitoring-configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
- name: cluster-monitoring-config
- namespace: openshift-monitoring
-data:
- config.yaml: |+
-   alertmanagerMain:
-     nodeSelector:
-       node-role.kubernetes.io/infra: ""
-     tolerations:
-     - key: infra
-       value: reserved
-       effect: NoSchedule
-     - key: infra
-       value: reserved
-       effect: NoExecute
-   prometheusK8s:
-     nodeSelector:
-       node-role.kubernetes.io/infra: ""
-     tolerations:
-     - key: infra
-       value: reserved
-       effect: NoSchedule
-     - key: infra
-       value: reserved
-       effect: NoExecute
-   prometheusOperator:
-     nodeSelector:
-       node-role.kubernetes.io/infra: ""
-     tolerations:
-     - key: infra
-       value: reserved
-       effect: NoSchedule
-     - key: infra
-       value: reserved
-       effect: NoExecute
-   grafana:
-     nodeSelector:
-       node-role.kubernetes.io/infra: ""
-     tolerations:
-     - key: infra
-       value: reserved
-       effect: NoSchedule
-     - key: infra
-       value: reserved
-       effect: NoExecute
-   k8sPrometheusAdapter:
-     nodeSelector:
-       node-role.kubernetes.io/infra: ""
-     tolerations:
-     - key: infra
-       value: reserved
-       effect: NoSchedule
-     - key: infra
-       value: reserved
-       effect: NoExecute
-   kubeStateMetrics:
-     nodeSelector:
-       node-role.kubernetes.io/infra: ""
-     tolerations:
-     - key: infra
-       value: reserved
-       effect: NoSchedule
-     - key: infra
-       value: reserved
-       effect: NoExecute
-   telemeterClient:
-     nodeSelector:
-       node-role.kubernetes.io/infra: ""
-     tolerations:
-     - key: infra
-       value: reserved
-       effect: NoSchedule
-     - key: infra
-       value: reserved
-       effect: NoExecute
-   openshiftStateMetrics:
-     nodeSelector:
-       node-role.kubernetes.io/infra: ""
-     tolerations:
-     - key: infra
-       value: reserved
-       effect: NoSchedule
-     - key: infra
-       value: reserved
-       effect: NoExecute
-EOF
- 
-oc create -f cluster-monitoring-configmap.yaml
-----
-
-==== 8. Update machine-config-daemon in order to update machine count under machines results, otherwise machine count will appear incorrectly number of machines under its type.
+==== 7. Update machine-config-daemon in order to update machine count under machines results, otherwise machine count will appear incorrectly number of machines under its type.
 [source]
 ----
 oc patch ds machine-config-daemon -n openshift-machine-config-operator  --type=merge -p '{"spec": {"template": { "spec": {"tolerations":[{"operator":"Exists"}]}}}}'
 ----
 
 
-==== 9. Check if machine config pool is showed properly count machines:
+==== 8. Check if machine config pool is showed properly count machines:
 [source]
 ----
 oc get mcp
@@ -238,7 +141,7 @@ worker   rendered-worker-aeb3c0e6e6db49f6487a37f0e3665b00   True      False     
 ----
 
 
-==== 10. Update the cluster on the web console gui  and check if all nodes had been updated to the same version.
+==== 9. Update the cluster on the web console gui  and check if all nodes had been updated to the same version.
 
 
 IMPORTANT: RESULT: Success. The cluster is updated and only projects with correct taints and toleration are provisioned to the infra nodes. The task has been accomplished accordingly.

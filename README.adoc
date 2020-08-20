@@ -1,20 +1,17 @@
-# Workshop Hands-on - Deploy OCP 4.2 on vSphere
-
+# Workshop Hands-on - Deploy OCP 4.x on Google Cloud
 ### Modules:
 
 link:overview.adoc[Deployment Overview]
 
 link:prerequisites.adoc[Prerequisites Preparation]
 
-link:ignition.adoc[Generating Install Files]
-
-link:vsphere-import-ova.adoc[Import OVA on vSphere]
-
-link:deploy.adoc[Deploy Cluster on vSphere]
+link:deploy.adoc[Deploy Cluster on Google Cloud Platform]
 
 link:post-deployment.adoc[Post deployment configuration]
 
 link:logging-deployment.adoc[Cluster Logging deployment]
+
+link:infra-worker.adoc[Creating Infra Node Role]
 
 link:persistence-tools.adoc[Configuring persistence for OpenShift tools (Registry, Monitoring and Logging)]
 
@@ -30,6 +27,5 @@ link:common-workshop-links.adoc[Workshop Links]
 This is a WIP. The following items is planned to be added:
 
 * LDAP configuration
-* Setup worker for infra
 * Certificates
 ====
