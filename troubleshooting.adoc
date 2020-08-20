@@ -1,35 +1,10 @@
 # Workshop Hands-on - Deploy OCP 4.x on Google Cloud
 
-### Troubleshooting tips
+## Troubleshooting tips
 
 
-#### Monitoring Installation Progress
-To monitor the install progress:
+### Monitoring Installation Progress
 
-----
-openshift-install --dir=/root/ocp wait-for bootstrap-complete --log-level debug
-openshift-install --dir=/root/ocp wait-for install-complete --log-level debug
-----
-
-Example:
-
-----
-[root@bastion ~]# openshift-install --dir=/root/ocp wait-for bootstrap-complete --log-level debug
-DEBUG OpenShift Installer v4.2.1
-DEBUG Built from commit e349157f325dba2d06666987603da39965be5319
-INFO Waiting up to 30m0s for the Kubernetes API at https://api.ocp41.rhbr-labs.com:6443...
-INFO API v1.14.6+868bc38 up
-INFO Waiting up to 30m0s for bootstrapping to complete...
-DEBUG Bootstrap status: complete
-INFO It is now safe to remove the bootstrap resources
-[root@bastion ~]# openshift-install --dir=/root/ocp wait-for install-complete --log-level debug
-DEBUG OpenShift Installer v4.2.1
-DEBUG Built from commit e349157f325dba2d06666987603da39965be5319
-INFO Waiting up to 30m0s for the cluster at https://api.ocp41.rhbr-labs.com:6443 to initialize...
-DEBUG Still waiting for the cluster to initialize: Working towards 4.2.2: 96% complete, waiting on authentication, console, image-registry, ingress, marketplace, monitoring, openshift-samples
-DEBUG Still waiting for the cluster to initialize: Working towards 4.2.2: 97% complete, waiting on authentication, console, image-registry, monitoring, openshift-samples
-----
- 
 #### Access bootstrap machine
 To access the bootstrap machine:
 ----

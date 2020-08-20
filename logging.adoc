@@ -121,33 +121,61 @@ The CRD defines the way like operators will run, to cluster logging we have some
 Cluster Logging in HA (3 ES instances):
 
 ----
-apiVersion: "logging.openshift.io/v1"
-kind: "ClusterLogging"
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogging
 metadata:
-  name: "instance" 
-  namespace: "openshift-logging"
+  name: instance
+  namespace: openshift-logging
 spec:
-  managementState: "Managed"  
-  logStore:
-    type: "elasticsearch"  
-    elasticsearch:
-      nodeCount: 3 
-      storage:
-        storageClassName: gp2 
-        size: 200G
-      redundancyPolicy: "SingleRedundancy"
-  visualization:
-    type: "kibana"  
-    kibana:
-      replicas: 1
-  curation:
-    type: "curator"  
-    curator:
-      schedule: "30 3 * * *"
   collection:
     logs:
-      type: "fluentd"  
       fluentd: {}
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+      type: fluentd
+  curation:
+    curator:
+      schedule: 30 3 * * *
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: curator
+  logStore:
+    elasticsearch:
+      nodeCount: 3
+      redundancyPolicy: SingleRedundancy
+      storage:
+        size: 200G
+        storageClassName: gp2
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: elasticsearch
+  managementState: Managed
+  visualization:
+    kibana:
+      replicas: 1
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: kibana
 ----
 
 
@@ -159,28 +187,55 @@ metadata:
   name: instance
   namespace: openshift-logging
 spec:
-  managementState: Managed
-  logStore:
-    type: elasticsearch
-    elasticsearch:
-      nodeCount: 1
-      redundancyPolicy: "ZeroRedundancy"
-      storage:
-        storageClassName: gp2
-        size: 200G
-  visualization:
-    type: kibana
-    kibana:
-      replicas: 1
-  curation:
-    type: curator
-    curator:
-      schedule: 30 3 * * *
   collection:
     logs:
-      type: fluentd
       fluentd: {}
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+      type: fluentd
+  curation:
+    curator:
+      schedule: 30 3 * * *
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: curator
+  logStore:
+    elasticsearch:
+      nodeCount: 1
+      redundancyPolicy: ZeroRedundancy
+      storage:
+        size: 200G
+        storageClassName: gp2
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: elasticsearch
+  managementState: Managed
+  visualization:
+    kibana:
+      replicas: 1
+      tolerations:
+      - effect: NoSchedule
+        key: infra
+        value: reserved
+      - effect: NoExecute
+        key: infra
+        value: reserved
+    type: kibana
 ----
 
-
-NOTE: After apply cluster logging CRD, Check the pods are running
+NOTE: After apply cluster logging CRD, Check the pods start to create.
