@@ -22,6 +22,7 @@ metadata:
 EOF
 
 oc create -f eo-namespace.yaml
+----
 
 === Create the OperatorGroup
 ----
@@ -54,6 +55,7 @@ spec:
 EOF
 
 oc create -f eo-sub.yaml
+----
 
 === Configure the project RBAC
 
@@ -112,11 +114,12 @@ EOF
 oc create -f clo-namespace.yaml
 ----
 
-=== Custom Resource Definition - Cluster Logging
+==== Custom Resource Definition - Cluster Logging
 
 The CRD defines the way like operators will run, to cluster logging we have some options like deploy with/without redundancy.
 
- Cluster Logging in HA (3 ES instances):
+Cluster Logging in HA (3 ES instances):
+
 ----
 apiVersion: "logging.openshift.io/v1"
 kind: "ClusterLogging"
@@ -148,7 +151,7 @@ spec:
 ----
 
 
-=== Cluster Logging single instance:
+==== Cluster Logging single instance:
 ----
 apiVersion: logging.openshift.io/v1
 kind: ClusterLogging
