@@ -25,15 +25,6 @@ oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patc
 In production environments set the registry storage with some supported persistent storage such as OCS or NFS.
 ====
 
-#### Set ingress configuration
-
-----
-oc get -n openshift-ingress-operator ingresscontrollers/default -o jsonpath='{$.spec.replicas}'
-2
-oc patch -n openshift-ingress-operator ingresscontroller/default --patch '{"spec":{"replicas": <NUM_OF_ROUTER_REPLICAS>}}' --type=merge
-ingresscontroller.operator.openshift.io/default patched
-----
-
 #### Config authentication with httpd
 
 ----

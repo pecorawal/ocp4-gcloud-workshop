@@ -1,4 +1,5 @@
-= Adjusting default IngressController
+
+== Adjusting default IngressController
 
 Because we are using taints and toleration techniques, you must patch the default ingresscontroller operator to join all openshift infrastructure project suh as routers at Infra Nodes.
 
