@@ -1,0 +1,18 @@
+= Adjusting default IngressController
+
+Because we are using taints and toleration techniques, you must patch the default ingresscontroller operator to join all openshift infrastructure project suh as routers at Infra Nodes.
+
+[source]
+----
+oc patch ingresscontroller/default -n openshift-ingress-operator --type=merge -p '{"spec":{"nodePlacement": {"nodeSelector": {"matchLabels": {"node-role.kubernetes.io/infra": ""}},"tolerations": [{"effect":"NoSchedule","key": "infra","value": "reserved"},{"effect":"NoExecute","key": "infra","value": "reserved"}]}}}'
+----
+
+After patching the operator , check new router pods create. Run:
+
+[source]
+----
+oc get pods -n openshift-ingress -o wide
+----
+
+The pods must reside on the Infra Nodes previously created.
+ 

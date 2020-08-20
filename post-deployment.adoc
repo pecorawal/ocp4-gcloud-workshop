@@ -1,10 +1,10 @@
-# Workshop Hands-on - Deploy OCP 4.2 on vSphere
+# Workshop Hands-on - Deploy OCP 4.x on Google Cloud
 
 ### Post deployment configuration
 
 After cluster is up and running it is important to add further features to best organize and easy maintenance of cluster.
 
-In the next steps, known as DAY 2, you will accomplish the following tasks:
+In the next steps, you will accomplish the following tasks:
 
 1. link:infra-worker.adoc[Create infra nodes and setup taints and tolerations strategy].
 2. link:ingresscontroller.adoc[Adjust ingresscontroller default to run only on infra nodes]. 
