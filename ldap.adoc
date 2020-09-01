@@ -1,22 +1,21 @@
 == LDAP Setting
 
-First thing is to maintain an LDAP tree with 4 main groups. This should be:
+First thing is to maintain an LDAP tree with 5 main groups. This should be:
 
-- OCP Admin
-- OCP Operations
-- OCP Project Admin
-- OCP Project Dev
-- OCP Project Viewer
+* OCP Admin
+* OCP Operations
+* OCP Project Admin
+* OCP Project Dev
+* OCP Project Viewer
 
 See sample image as follows:
 
-image::https://raw.githubusercontent.com/pecorawal/images/master/gcloud-projectid.png[]
+image::https://raw.githubusercontent.com/pecorawal/images/master/images/ldap-groups.png[]
 
 
-[image]::
+=== Apply the Oauth CR
 
-=== Adjusting registry to run at Infra Nodes
-
+After adjust the LDAP Group tree on the underlying infrastructure, you must create the 
 Patching image registry tolerations and node selector.
 
 [source]
