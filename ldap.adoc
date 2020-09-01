@@ -1,0 +1,37 @@
+== LDAP Setting
+
+First thing is to maintain an LDAP tree with 4 main groups. This should be:
+
+- OCP Admin
+- OCP Operations
+- OCP Project Admin
+- OCP Project Dev
+- OCP Project Viewer
+
+See sample image as follows:
+
+image::https://raw.githubusercontent.com/pecorawal/images/master/gcloud-projectid.png[]
+
+
+[image]::
+
+=== Adjusting registry to run at Infra Nodes
+
+Patching image registry tolerations and node selector.
+
+[source]
+----
+oc patch config/cluster -n openshift-image-registry --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "infra","value": "reserved"},{"effect":"NoExecute","key": "infra","value": "reserved"}]}}'
+----
+
+
+=== Set registry storage to use ephemeral volume
+
+[source]
+----
+oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
+----
+
+NOTE: In production environments set the registry storage with some supported persistent storage such as OCS or NFS.
+
+
