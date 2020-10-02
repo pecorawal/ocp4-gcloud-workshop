@@ -9,8 +9,6 @@ link:deploy.adoc[Deploy Cluster on Google Cloud Platform]
 
 link:post-deployment.adoc[Post deployment configuration]
 
-link:logging-deployment.adoc[Cluster Logging deployment]
-
 link:infra-worker.adoc[Creating Infra Node Role]
 
 link:troubleshooting.adoc[Troubleshooting tips]
