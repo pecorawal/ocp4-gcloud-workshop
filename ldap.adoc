@@ -1,0 +1,52 @@
+== LDAP Setting
+
+First thing is to maintain an LDAP tree with 5 main groups. This should be:
+
+* OCP Admin
+* OCP Operations
+* OCP Project Admin
+* OCP Project Dev
+* OCP Project Viewer
+
+See sample image as follows:
+
+image::https://raw.githubusercontent.com/pecorawal/images/master/images/ldap-groups.png[]
+
+===  Create the Secrets to BindPassword
+
+oc create secret generic ldap-secret --from-literal=bindPassword='senhaAD$' -n openshift-config
+
+=== Apply the Oauth CR
+
+After adjust the LDAP Group tree on the underlying infrastructure, you must create the CR to update oauth .
+
+
+[source]
+----
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - ldap:
+      attributes:
+        email: []
+        id:
+        - sAMAccountName
+        name:
+        - cn
+        preferredUsername:
+        - sAMAccountName
+      bindDN: DOMAIN_CONTROLLER\_user_svc
+      bindPassword:
+        name: ldap-bind-password-xyz7a
+      insecure: true
+      url: ldap://domaincontroller.{{ dominio }}.br:389/OU=DOMAIN,DC=com,DC=br?sAMAccountName
+    mappingMethod: claim
+    name: Login Ldap {{ customer }}
+    type: LDAP
+----
+
+
+

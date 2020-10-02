@@ -94,7 +94,7 @@ cac672bbc457d cc480f7d86b3c53906ce61203bf118801fd78f945553f2b10c4d70ed7e1219c3 3
 To check the API certificate (use this to check if the certificate is not expired):
 
 ----
-echo | openssl s_client -connect api-int.ocp41.rhbr-labs.com:6443 | openssl x509 -noout -text
+echo | openssl s_client -connect api-int.{{domain}}.com:6443 | openssl x509 -noout -text
 ----
 
 Example:
