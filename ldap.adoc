@@ -10,7 +10,7 @@ First thing is to maintain an LDAP tree with 5 main groups. This should be:
 
 See sample image as follows:
 
-image::https://raw.githubusercontent.com/pecorawal/images/master/images/ldap-groups.png[]
+image:https://raw.githubusercontent.com/pecorawal/ocp4-gcloud-workshop/master/images/ldap-groups.png[]
 
 ===  Create the Secrets to BindPassword
 
