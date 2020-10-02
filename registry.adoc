@@ -20,3 +20,76 @@ oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patc
 NOTE: In production environments set the registry storage with some supported persistent storage such as OCS or NFS.
 
 
+=== SECOND WAY - Registry storage using local NFS
+
+To use a persistent storage like NFS you must create PV/PVC and non-dynamic storage class. Also, you you patch registry CR as follows:
+
+==== PV
+
+[source]
+----
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+ name: image-registry-pv
+spec:
+ accessModes:
+ - ReadWriteMany
+ capacity:
+   storage: 150Gi
+ nfs:
+   path: /nfs/nfsuser/NfsRegistryOpenShift
+   server: nfs.{{dominio}}.br
+ persistentVolumeReclaimPolicy: Retain
+ storageClassName: non-dynamic
+----
+
+==== PVC 
+
+[source]
+----
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  finalizers:
+  - kubernetes.io/pvc-protection
+  name: image-registry-storage
+  namespace: openshift-image-registry
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 150Gi
+  storageClassName: non-dynamic
+----
+
+==== StorageClass
+
+[source]
+----
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  name: non-dynamic
+provisioner: no-provisioning
+parameters:
+----
+
+==== Change Registry CR
+
+Edit the registry CR configs.imageregistry.operator.openshift.io/cluster and add theses 3 lines before status:
+
+[source]
+----
+  storage:
+    pvc:
+      claim: image-registry-storage
+----
+
+Delete any remain registry pods and therefore you able to see persistent storage mounted.
+
+
+

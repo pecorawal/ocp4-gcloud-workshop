@@ -12,25 +12,39 @@ See sample image as follows:
 
 image::https://raw.githubusercontent.com/pecorawal/images/master/images/ldap-groups.png[]
 
+===  Create the Secrets to BindPassword
+
+oc create secret generic ldap-secret --from-literal=bindPassword='senhaAD$' -n openshift-config
 
 === Apply the Oauth CR
 
-After adjust the LDAP Group tree on the underlying infrastructure, you must create the 
-Patching image registry tolerations and node selector.
+After adjust the LDAP Group tree on the underlying infrastructure, you must create the CR to update oauth .
+
 
 [source]
 ----
-oc patch config/cluster -n openshift-image-registry --type=merge -p '{"spec":{"nodeSelector": {"node-role.kubernetes.io/infra": ""},"tolerations": [{"effect":"NoSchedule","key": "infra","value": "reserved"},{"effect":"NoExecute","key": "infra","value": "reserved"}]}}'
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - ldap:
+      attributes:
+        email: []
+        id:
+        - sAMAccountName
+        name:
+        - cn
+        preferredUsername:
+        - sAMAccountName
+      bindDN: DOMAIN_CONTROLLER\_user_svc
+      bindPassword:
+        name: ldap-bind-password-xyz7a
+      insecure: true
+      url: ldap://domaincontroller.{{ dominio }}.br:389/OU=DOMAIN,DC=com,DC=br?sAMAccountName
+    mappingMethod: claim
+    name: Login Ldap {{ customer }}
+    type: LDAP
 ----
-
-
-=== Set registry storage to use ephemeral volume
-
-[source]
-----
-oc patch configs.imageregistry.operator.openshift.io cluster --type merge --patch '{"spec":{"storage":{"emptyDir":{}}}}'
-----
-
-NOTE: In production environments set the registry storage with some supported persistent storage such as OCS or NFS.
-
 
