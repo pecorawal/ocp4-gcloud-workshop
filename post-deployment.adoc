@@ -1,4 +1,4 @@
-# Workshop Hands-on - Deploy OCP 4.x on Google Cloud
+= Workshop Hands-on - Deploy OCP 4.x on Google Cloud
 
 ### Post deployment configuration
 
@@ -9,8 +9,8 @@ In the next steps, you will accomplish the following tasks:
 1. link:infra-worker.adoc[Create infra nodes and setup taints and tolerations strategy].
 2. link:ingresscontroller.adoc[Adjust ingresscontroller default to run only on infra nodes]. 
 3. link:monitoring.adoc[Provisioning monitoring stack to run only on infra nodes].
-4. link:registry.adoc[Provisioning Registry to run only on infra nodes and ephemeral mode].
-5. link:authentication.adoc[Configuring httpd authentication and export oauth CRD in order to add new identity providers]
+4. link:registry.adoc[Provisioning Registry to run only on infra nodes -  Ephemeral or Persistent Storage mode].
+5. link:authentication.adoc[Configuring httpd authentication and export oauth CRD in order to add new identity providers].
 6. link:logging.adoc[Create a Cluster Logging stack fully automated].
-
+7. link:certificate.adoc[Applying Custom Certificates to OCP].
 

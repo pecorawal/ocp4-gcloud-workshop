@@ -1,0 +1,30 @@
+
+== Applying certificates
+
+Openshift 4.x simplified a lot the process to apply custom certificates to routers and applications.
+
+=== Get CA, Certificate and Private Key
+
+To start for custom certificates you must first save the Certificate Authority Chain (CA), the domain certificate (.crt, .pem, etc) and the private key.
+
+==== Create a tls secret
+
+.Concatenate, in this order,  your Certificate and CA into a single file, for example fullchain_cert.pem.
+[source]
+----
+cat certificate.pem ca.pem > fullchain_cert.pem
+----
+
+.Create a TLS secret, named it to ingress-tls to maintain the same name of mounted secret ingresscontroller CR.
+[source]
+----
+oc create secret tls ingress-tls --cert=fullchain_cert.pem --key=privkey.pem -n openshift-ingress
+----
+
+
+.Patch the ingresscontroller operator default to apply recently secret file created.
+oc patch ingresscontroller.operator default --type=merge -p '{"spec":{"defaultCertificate": {"name": "<certificate>"}}}' -n openshift-ingress-operator
+
+[IMPORTANT]
+- You must have a wildcard certificate and its private key, both in the PEM format, for use.
+- The certificate must have a subjectAltName extension of *.apps.<clustername>.<domain>.
