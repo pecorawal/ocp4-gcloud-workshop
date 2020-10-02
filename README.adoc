@@ -7,8 +7,6 @@ link:prerequisites.adoc[Prerequisites Preparation]
 
 link:deploy.adoc[Deploy Cluster on Google Cloud Platform]
 
-link:infra-worker.adoc[Creating Infra Node Role]
-
 link:post-deployment.adoc[Post deployment configuration]
 
 link:troubleshooting.adoc[Troubleshooting tips]

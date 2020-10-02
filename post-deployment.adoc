@@ -11,6 +11,7 @@ In the next steps, you will accomplish the following tasks:
 3. link:monitoring.adoc[Provisioning monitoring stack to run only on infra nodes].
 4. link:registry.adoc[Provisioning Registry to run only on infra nodes -  Ephemeral or Persistent Storage mode].
 5. link:authentication.adoc[Configuring httpd authentication and export oauth CRD in order to add new identity providers].
+6. link:ldap.adoc[Add LDAP Identity Provider and Group Sync]
 6. link:logging.adoc[Create a Cluster Logging stack fully automated].
 7. link:certificate.adoc[Applying Custom Certificates to OCP].
 
