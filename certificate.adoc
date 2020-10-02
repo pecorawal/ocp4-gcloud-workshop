@@ -26,7 +26,7 @@ oc create secret tls ingress-tls --cert=fullchain_cert.pem --key=privkey.pem -n 
 
 [source]
 ----
-oc patch ingresscontroller.operator default --type=merge -p '{"spec":{"defaultCertificate": {"name": "<certificate>"}}}' -n openshift-ingress-operator
+oc patch ingresscontroller.operator default --type=merge -p '{"spec":{"defaultCertificate": {"name": "ingress-tls"}}}' -n openshift-ingress-operator
 ----
 
 IMPORTANT: You must have a wildcard certificate and its private key, both in the PEM format, for use.
