@@ -14,10 +14,3 @@ link:infra-worker.adoc[Creating Infra Node Role]
 link:troubleshooting.adoc[Troubleshooting tips]
 
 
-
-[NOTE]
-====
-This is a WIP. The following items is planned to be added:
-
-* Certificates
-====
