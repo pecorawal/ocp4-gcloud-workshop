@@ -42,7 +42,7 @@ spec:
       bindPassword:
         name: ldap-bind-password-xyz7a
       insecure: true
-      url: ldap://domaincontroller.{{ dominio }}.br:389/OU=DOMAIN,DC=com,DC=br?sAMAccountName
+      url: ldap://domaincontroller.{{ domain }}.br:389/OU=DOMAIN,DC=domain,DC=br?sAMAccountName
     mappingMethod: claim
     name: Login Ldap {{ customer }}
     type: LDAP
@@ -50,3 +50,45 @@ spec:
 
 
 
+
+=== Creating an AllowList Ldap Group Sync File
+
+.Creating Ldap Sync Config YAML file as allowlist.yaml
+[source]
+----
+kind: LDAPSyncConfig
+apiVersion: v1
+url: ldap://domaincontroller.{{ domain }}.br:389
+bindDN: "CN=_user_svc,OU=DOMAIN,DC=domain,DC=br"
+bindPassword: "OMMITTED"
+insecure: true
+activeDirectory:
+  usersQuery:
+    baseDN: "DC=domain,DC=br"
+    scope: sub
+    derefAliases: never
+    filter: (objectCategory=*)
+    pageSize: 100
+  userNameAttributes: [ sAMAccountName ]
+  groupMembershipAttributes: [ memberOf ]
+groupUIDNameMapping:
+  "CN=OCP_Admin,OU=OCP_Groups,OU=DOMAIN,DC=domain,DC=br": "OCP_Admin"
+  "CN=OCP_Operation,OU=OCP_Groups,OU=DOMAIN,DC=domain,DC=br": "OCP_Operation"
+  "CN=OCP_Project_Modify,OU=OCP_Groups,OU=DOMAIN,DC=domain,DC=br": "OCP_Project_Modify"
+  "CN=OCP_Project_Owner,OU=OCP_Groups,OU=DOMAIN,DC=domain,DC=br": "OCP_Project_Owner"
+  "CN=OCP_Project_Viewer,OU=OCP_Groups,OU=DOMAIN,DC=domain,DC=br": "OCP_Project_Viewer"
+----
+
+.Execute Sync Periodically
+
+First dry run to check if groups are bringing properly users groups.
+[source]
+----
+oc adm groups sync --sync-config=allowlist.yaml
+----
+
+Everything worked as expected, so, confirm the sync:
+[source]
+----
+oc adm groups sync --sync-config=allowlist.yaml --confirm
+----
